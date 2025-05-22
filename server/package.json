@@ -6,14 +6,17 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' './src/index.ts'",
-    "lint": "eslint 'src/**/*.ts'"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r dotenv/config' './src/index.ts'",
+    "lint": "eslint 'src/**/*.ts'",
+    "db:generate": "dotenv -- drizzle-kit generate",
+    "db:migrate": "dotenv -- drizzle-kit migrate"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.43.1",
-    "pg": "^8.16.0"
+    "pg": "^8.16.0",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",
