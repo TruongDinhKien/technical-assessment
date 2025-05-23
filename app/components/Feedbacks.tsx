@@ -89,9 +89,11 @@ export function FeedbackContainer() {
   };
 
   const handleUploadSuccess = () => {
+    setCurrentPage(1);
+    setSearchTerm('');
     setTimeout(() => {
-      setCurrentPage(1);
-      setSearchTerm('');
+
+      fetchFeedbacks()
     }, DEBOUNDED_SEARCH_DELAY);
   };
 
