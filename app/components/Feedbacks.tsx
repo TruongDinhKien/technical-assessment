@@ -92,7 +92,7 @@ export function FeedbackContainer() {
     setTimeout(() => {
       setCurrentPage(1);
       setSearchTerm('');
-    }, DEBOUNDED_SEARCH_DELAY );
+    }, DEBOUNDED_SEARCH_DELAY);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,9 +104,10 @@ export function FeedbackContainer() {
 
   return (
     <div className="flex flex-col items-center p-4">
-      <CsvUploadForm onUploadSuccess={handleUploadSuccess} />
       {/* Search Bar */}
       <div className="mb-4 w-full max-w-2xl">
+        <CsvUploadForm onUploadSuccess={handleUploadSuccess} />
+
         <input
           type="text"
           placeholder="Search feedbacks by name or body..."

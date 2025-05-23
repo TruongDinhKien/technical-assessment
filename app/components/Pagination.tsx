@@ -22,8 +22,8 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           key={i}
           onClick={() => onPageChange(i)}
           className={`
-              cursor-pointer px-4 py-2 text-blue-600  border border-r-0 border-y-0 border-blue-600 focus:shadow-outline focus:opacity-50
-              ${isCurrent ? 'bg-blue-600 text-white' : ' hover:bg-blue-100'}
+              cursor-pointer px-4 py-2 text-gray-500  border border-r-0 border-y-0 border-gray-600 focus:shadow-outline focus:opacity-50
+              ${isCurrent ? 'bg-gray-800 text-white' : ' hover:bg-gray-700'}
               ${i === startPage && currentPage !== 1 ? '' : ''}
               ${i === endPage && currentPage !== totalPages ? '' : ''}
             `}
@@ -39,11 +39,11 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   return (
     <div className="p-4 flex items-center flex-wrap justify-center">
       <nav aria-label="Page navigation">
-        <ul className="inline-flex rounded-lg overflow-hidden border border-blue-600">
+        <ul className="inline-flex rounded-lg overflow-hidden border border-gray-600">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="cursor-pointer px-4 py-2 text-blue-600 focus:shadow-outline hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer px-4 py-2 text-gray-500 focus:shadow-outline hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Prev
           </button>
@@ -51,7 +51,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="cursor-pointer px-4 py-2 text-blue-600 focus:shadow-outline hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer border border-y-0 border-r-0 border-gray-600 px-4 py-2 text-gray-500 focus:shadow-outline hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>

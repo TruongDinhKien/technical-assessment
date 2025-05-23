@@ -62,7 +62,7 @@ export const CsvUploadForm: FC<CsvUploadFormProps> =
     };
 
     return (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6 w-full max-w-md">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6 text-center">
         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Upload Feedback CSV</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

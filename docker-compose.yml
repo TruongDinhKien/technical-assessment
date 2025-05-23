@@ -1,0 +1,71 @@
+# docker-compose.yml
+
+version: "3.8"
+
+services:
+  # 1. PostgreSQL Database Service
+  db:
+    image: postgres:16-alpine
+    container_name: feedback_db
+    restart: always 
+    environment:
+      POSTGRES_DB: ${DB_NAME:-feedback_app} 
+      POSTGRES_USER: ${DB_USER:-user} 
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password} 
+    ports:
+      - "5432:5432" # Map container port 5432 to host port 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data 
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-feedback_app}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Node.js Backend Service
+  backend:
+    build:
+      context: ./server 
+      dockerfile: Dockerfile 
+    container_name: feedback_backend
+    restart: always
+    ports:
+      - "3000:3000" 
+    environment:
+      # Pass database connection details to the backend
+      DATABASE_URL: postgresql://${DB_USER:-user}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-feedback_app}
+      NODE_ENV: production 
+    depends_on:
+      db:
+        condition: service_healthy 
+    volumes:
+      - ./server:/app/server 
+      - /app/server/node_modules 
+    command: npm run start
+
+  # 3. React Frontend Service
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: feedback_frontend
+    restart: always
+    ports:
+      - "5173:5173" 
+    environment:
+      REACT_APP_API_URL: http://localhost:3000 
+      # REACT_APP_API_URL: http://feedback_backend:3000
+    depends_on:
+      backend:
+        condition: service_started 
+    volumes:
+      - ./client:/app/client 
+      - /app/client/node_modules 
+    command:
+      npm run dev # Or `serve -s build` after `npm run build` if using a static serve
+      # Ensure your frontend's `npm run start` or `npm run dev` command is suitable for Docker.
+      # For Vite, `npm run dev -- --host 0.0.0.0` is often needed inside container.
+
+# Docker Volumes for data persistence
+volumes:
+  db_data:
