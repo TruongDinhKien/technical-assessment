@@ -32,17 +32,25 @@ Make sure you have the following installed:
     cd technical-assessments
     ```
 
-2.  **Create a `.env` file:**
-    In the root of your project directory, create a file named `.env` and add the following content. This will configure your database connection.
-    Example
-    ```dotenv
-    # .env
-    DB_NAME=feedback_app
-    DB_USER=user
-    DB_PASSWORD=password
-    ```
+2.  **Create `.env` files:**
+    * **Project Root (`.env`):** In the root of your project directory, create a file named `.env` and add the following content. This will configure your database connection for Docker Compose.
 
-    *You can customize these values, but ensure they match your needs and are kept secure in production environments.*
+        ```dotenv
+        # .env (in project root)
+        DB_NAME=feedback_app
+        DB_USER=user
+        DB_PASSWORD=password
+        ```
+
+        *You can customize these values, but ensure they match your needs and are kept secure in production environments.*
+
+    * **Backend (`./server/.env`):** If you plan to run the backend separately for development or migrations (outside of Docker Compose), you'll also need a `.env` file inside the `./server` directory.
+
+        ```dotenv
+        # .env (in server/ directory)
+        DATABASE_URL="postgresql://user:password@localhost:5432/feedback_app"
+        ```
+        *Adjust `user`, `password`, `localhost`, `5432`, and `feedback_app` to match your PostgreSQL setup if you're running it outside Docker Compose or on a different host/port.*
 
 ### Running the Application (Recommended: Docker Compose)
 
@@ -62,8 +70,23 @@ The easiest way to get the entire application (database, backend, and frontend) 
     * **Backend API:** `http://localhost:3000` (for direct API access, though typically used by the frontend)
 
 
+### Database Migrations
+
+If your project uses Drizzle ORM for database schema management, you'll need to run migrations to apply schema changes to your database.
+
+1.  **Ensure your database is running:** You can use `docker-compose up -d db` to start only the database container.
+2.  **Navigate to the backend directory:**
+    ```bash
+    cd server
+    ```
+3.  **Run migrations:**
+    ```bash
+    npm run db:migrate
+    ```
+    *(Note: You will need to define the `db:migrate` script in your `server/package.json` to execute your Drizzle migration command, e.g., `drizzle-kit migrate` or a custom script.)*
+
 ### Stopping the Application
 
 To stop and remove the containers:
 ```bash
-docker-compose downs
+docker-compose down
