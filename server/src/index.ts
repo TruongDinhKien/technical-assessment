@@ -1,6 +1,6 @@
 
 import bodyParser from 'body-parser'
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express' 
 import cors from 'cors'
 import { getFeedbacks } from './controllers/feedbacksController'
 import postgres from 'postgres'
@@ -39,6 +39,15 @@ app.get('/feedbacks', (req, res, next) => {
 app.post('/feedbacks/upload-csv', uploadMiddleware, (req, res, next) => {
   uploadFeedbacksCsv(req, res, db).catch(next);
 });
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: "Internal Server Error",
+    // details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
+});
+
 
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`)
