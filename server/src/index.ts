@@ -2,15 +2,16 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import cors from 'cors'
-import { Request, Response } from 'express'
-import { getFeedbacks } from './database/queries'
+import { getFeedbacks } from './controllers/feedbacksController'
 import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { DatabaseContext } from './database/context'
 import * as schema from "./database/schema";
+import { uploadFeedbacksCsv, uploadMiddleware } from './controllers/uploadController'
+import { DEFAULT_PORT } from './constant'
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || DEFAULT_PORT
 
 app.use(bodyParser.json())
 app.use(
@@ -18,6 +19,7 @@ app.use(
     extended: true,
   })
 )
+app.use(cors())
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 
@@ -26,14 +28,17 @@ const db = drizzle(client, { schema });
 app.use((_, __, next) => DatabaseContext.run(db, next));
 
 
-app.use(cors())
-app.get('/', (request: Request, response: Response) => {
+app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 })
 
-app.get('/feedbacks', (req: Request, res: Response, next) => {
+app.get('/feedbacks', (req, res, next) => {
   getFeedbacks(req, res).catch(next)
 })
+
+app.post('/feedbacks/upload-csv', uploadMiddleware, (req, res, next) => {
+  uploadFeedbacksCsv(req, res, db).catch(next);
+});
 
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`)

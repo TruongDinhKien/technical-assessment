@@ -9,7 +9,6 @@ export const DatabaseContext = new AsyncLocalStorage<
 >();
 
 export function database() {
-  console.log(DatabaseContext,'DatabaseContext');
   const db = DatabaseContext.getStore();
   if (!db) {
     throw new Error("DatabaseContext not set");
