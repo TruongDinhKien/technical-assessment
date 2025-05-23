@@ -1,8 +1,8 @@
-// src/controllers/feedbackController.ts
 import { Request, Response } from 'express';
-import { asc, count } from 'drizzle-orm';
+import { asc, count, ilike, or } from 'drizzle-orm';
 import { database } from '../database/context';
 import { feedback } from '../database/schema';
+
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
 
@@ -12,21 +12,35 @@ export const getFeedbacks = async (request: Request, response: Response) => {
     parseInt(request.query.limit as string || String(DEFAULT_LIMIT), 10),
     MAX_LIMIT
   );
+  const searchTerm = request.query.search as string | undefined;
+
   const offset = Math.max(0, (page - 1) * limit);
 
   try {
-    const feedbackEntries = await database()
+    const db = database();
+
+    let searchCondition;
+    if (searchTerm) {
+      searchCondition = or(
+        ilike(feedback.name, `%${searchTerm}%`),
+        ilike(feedback.body, `%${searchTerm}%`)
+      );
+    }
+
+    const feedbackEntries = await db
       .select()
       .from(feedback)
+      .where(searchCondition)
       .orderBy(asc(feedback.id))
       .limit(limit)
       .offset(offset);
 
-    const totalCountResult = await database()
+    const totalCountResult = await db
       .select({
         count: count()
       })
-      .from(feedback);
+      .from(feedback)
+      .where(searchCondition); 
 
     const totalItems = totalCountResult[0].count;
     const totalPages = Math.ceil(totalItems / limit);

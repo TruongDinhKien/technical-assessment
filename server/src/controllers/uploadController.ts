@@ -42,7 +42,6 @@ export const uploadFeedbacksCsv = async (request: Request, response: Response, d
       {
         mapHeaders: ({ header }) => {
           const cleanedHeader = header.replace(/"/g, '').trim();
-          console.log(`Original header: "${header}" -> Cleaned header: "${cleanedHeader}"`);
           return cleanedHeader;
         }
       }
@@ -53,18 +52,17 @@ export const uploadFeedbacksCsv = async (request: Request, response: Response, d
       const name = data.name
       const body = data.body
       const email = data.email
-      
+
       if (id && postId && name && body && email)
         results.push({
           id,
           name,
-          body,
+          body: data.body.replace(/\\n/g, '\n'),
           postId,
           email,
         });
     })
     .on('end', async () => {
-
       if (results.length === 0) {
         return response.status(400).json({ error: 'CSV file is empty or malformed.' });
       }
@@ -77,7 +75,10 @@ export const uploadFeedbacksCsv = async (request: Request, response: Response, d
         });
       } catch (error) {
         console.error("Error inserting feedbacks from CSV:", error);
-        response.status(500).json({ error: "Failed to insert feedbacks. Check CSV format or server logs." });
+        if (error instanceof Error && error.message)
+          response.status(500).json({ error: error.message});
+        else
+          response.status(500).json({ error: "Failed to insert feedbacks. Check CSV format or server logs." });
       }
     })
     .on('error', (error) => {
