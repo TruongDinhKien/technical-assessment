@@ -90,3 +90,13 @@ If your project uses Drizzle ORM for database schema management, you'll need to 
 To stop and remove the containers:
 ```bash
 docker-compose down
+```
+
+### Running Tests
+
+To run the application's tests, use these commands:
+
+```bash
+cd server
+npm test
+```
