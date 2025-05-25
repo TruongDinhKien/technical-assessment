@@ -10,7 +10,7 @@
     "lint": "eslint 'src/**/*.ts'",
     "db:generate": "dotenv -- drizzle-kit generate",
     "db:migrate": "dotenv -- drizzle-kit migrate",
-    "test": "jest"
+    "test": "jest --force-exit --detectOpenHandles"
   },
   "dependencies": {
     "cors": "^2.8.5",

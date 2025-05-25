@@ -70,7 +70,7 @@ export const uploadFeedbacksCsv = async (request: Request, response: Response, d
       try {
         await dbInstance.insert(feedback).values(results);
         response.status(200).json({
-          message: `Successfully uploaded and added ${results.length} feedback entries.`,
+          message: `Successfully uploaded and added ${results.length} feedback entr${results.length == 1 ? 'y' : 'ies' }.`,
           count: results.length,
         });
       } catch (error) {
