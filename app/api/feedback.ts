@@ -1,31 +1,22 @@
-import type { Feedback } from "server/global";
+import { BASE_URL } from "~/constant";
 
-async function getFeedbacks(): Promise<Feedback[]> {
-  const response = await fetch("http://localhost:3000/feedbacks");
+async function getFeedbacks(queryParams: URLSearchParams) {
+  const response = await fetch(`${BASE_URL}/feedbacks?${queryParams.toString()}`);
+  if (!response.ok)
+    throw new Error(`HTTP error! status: ${response.status}`);
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Failed to fetch feedbacks: ${response.status} - ${errorBody}`);
-  }
+  const data: PaginatedFeedbackResponse = await response.json();
 
-  const data = await response.json();
-
-  return data.data as Feedback[];
-  // if (Array.isArray(data.data)) {
-  //   return data.data as Feedback[];
-  // }
-  // // If your API returns [...] directly
-  // else if (Array.isArray(data)) {
-  //   return data as Feedback[];
-  // }
-  // // If the structure is unexpected, throw an error or return an empty array
-  // else {
-  //   console.error("API response is not an array or does not contain a 'data' array:", data);
-  //   // Optionally, return an empty array to prevent crashing
-  //   return [];
-  //   // Or throw a specific error
-  //   // throw new TypeError("Unexpected API response format for feedbacks");
-  // }
+  return data
 }
 
-export { getFeedbacks };
+async function postFeedbacks(formData: FormData) {
+  const response = await fetch(`${BASE_URL}/feedbacks/upload-csv`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return response
+}
+
+export { getFeedbacks, postFeedbacks };

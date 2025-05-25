@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FC } from "react";
+import { postFeedbacks } from "~/api/feedback";
 
 interface CsvUploadFormProps {
   onUploadSuccess?: () => void;
@@ -36,11 +37,7 @@ export const CsvUploadForm: FC<CsvUploadFormProps> =
       formData.append("csvFile", selectedFile);
 
       try {
-        const response = await fetch("http://localhost:3000/feedbacks/upload-csv", {
-          method: "POST",
-          body: formData,
-        });
-
+        const response = await postFeedbacks(formData)
         const result = await response.json();
 
         if (response.ok) {

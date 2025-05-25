@@ -1,19 +1,11 @@
 "use client";
 
 import { use, Suspense, useState, useEffect, useCallback } from "react";
-import type { Feedback } from "server/global";
 import { Pagination } from "./Pagination";
 import { CsvUploadForm } from "./CsvUploadForm";
 import { DEBOUNDED_SEARCH_DELAY, DEFAULT_ITEMS_PER_PAGE } from "~/constant";
 import { useDebounce } from "~/hooks/useDebounce";
-
-interface PaginatedFeedbackResponse {
-  page: number;
-  limit: number;
-  totalItems: number;
-  totalPages: number;
-  data: Feedback[];
-}
+import { getFeedbacks } from "~/api/feedback";
 
 function RenderFeedbacks({ feedbackPromise, searchTerm }: { feedbackPromise: Promise<PaginatedFeedbackResponse>, searchTerm?: string }) {
   const paginatedResponse: PaginatedFeedbackResponse = use(feedbackPromise);
@@ -29,7 +21,7 @@ function RenderFeedbacks({ feedbackPromise, searchTerm }: { feedbackPromise: Pro
   return (
     <>
       {feedbackEntries.map(({ id, name, body, postId, createdAt }) => (
-        <li key={id} className="p-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 text-left h-20">
+        <li key={id} className="p-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 text-left h-28 md:h-20">
           <p className="font-semibold text-gray-800 dark:text-gray-200">
             {name} (Post ID: {postId})
           </p>
@@ -59,15 +51,10 @@ export function FeedbackContainer() {
         limit: itemsPerPage.toString(),
       });
 
-      if (debouncedSearchTerm) {
+      if (debouncedSearchTerm)
         queryParams.append('search', debouncedSearchTerm);
-      }
 
-      const response = await fetch(`http://localhost:3000/feedbacks?${queryParams.toString()}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: PaginatedFeedbackResponse = await response.json();
+      const data = await getFeedbacks(queryParams)
       setFeedbackPromise(Promise.resolve(data));
       setTotalItems(data.totalItems);
       setTotalPages(data.totalPages);
@@ -122,7 +109,7 @@ export function FeedbackContainer() {
       </div>
 
       <ul className="text-center w-full max-w-2xl bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-        <Suspense fallback={<div className="p-3 h-100 text-gray-500 dark:text-gray-400 place-content-center">⌛ Loading feedback...</div>}>
+        <Suspense fallback={<div className="p-3 h-140 md:h-100 text-gray-500 dark:text-gray-400 place-content-center">⌛ Loading feedback...</div>}>
           <RenderFeedbacks feedbackPromise={feedbackPromise} searchTerm={searchTerm} />
         </Suspense>
       </ul>
